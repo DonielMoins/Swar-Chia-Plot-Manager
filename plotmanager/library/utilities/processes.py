@@ -4,13 +4,13 @@ import platform
 import psutil
 import re
 import subprocess
+import ctypes
 
 from copy import deepcopy
 from datetime import datetime
 
 from plotmanager.library.utilities.objects import Work
 from plotmanager.library.utilities.instrumentation import set_plots_running
-
 
 def _contains_in_list(string, lst, case_insensitive=False):
     if case_insensitive:
@@ -43,6 +43,11 @@ def get_manager_processes():
 def is_windows():
     return platform.system() == 'Windows'
 
+def is_admin():
+    try:
+        return os.getuid() == 0
+    except AttributeError:
+        return ctypes.windll.shell32.IsUserAnAdmin() != 0
 
 def get_chia_executable_name():
     return f'chia{".exe" if is_windows() else ""}'

@@ -18,7 +18,7 @@ from plotmanager.library.utilities.processes import is_windows, get_manager_proc
     start_process, identify_drive, get_system_drives
 
 
-def start_manager():
+def start_manager(restart=False):
     if get_manager_processes():
         raise ManagerError('Manager is already running.')
 
@@ -54,11 +54,18 @@ def start_manager():
     if not get_manager_processes():
         raise ManagerError('Failed to start Manager. Please look at debug.log for more details on the error. It is in the same folder as manager.py.')
 
-    send_notifications(
-        title='Plot manager started',
-        body=f'Plot Manager has started on {socket.gethostname()}...',
-        settings=notification_settings,
-    )
+    if restart:
+        send_notifications(
+            title='Plot manager restarted',
+            body=f'Plot Manager has restarted on {socket.gethostname()}...',
+            settings=notification_settings,
+        )
+    else:
+        send_notifications(
+            title='Plot manager started',
+            body=f'Plot Manager has started on {socket.gethostname()}...',
+            settings=notification_settings,
+        )
     print('Plot Manager has started...')
 
 

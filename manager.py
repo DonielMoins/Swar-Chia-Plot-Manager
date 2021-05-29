@@ -30,7 +30,7 @@ if args.action == 'start':
     start_manager()
 elif args.action == 'restart':
     stop_manager()
-    start_manager()
+    start_manager(restart=True)
 elif args.action == 'stop':
     stop_manager()
 elif args.action == 'view':
