@@ -34,8 +34,9 @@ def get_manager_processes():
                     not _contains_in_list('stateless-manager.py', process.cmdline()):
                 continue
             processes.append(process)
-        except (psutil.NoSuchProcess, psutil.AccessDenied):
-            pass
+        except (psutil.NoSuchProcess, psutil.AccessDenied) as error:
+            if isinstance(error, psutil.AccessDenied):
+                logging.info('Access denied error, if you are having issues, try running as admin.')
     return processes
 
 
@@ -178,19 +179,22 @@ def get_running_plots(jobs, running_work, instrumentation_settings):
         try:
             if chia_executable_name not in process.name() and 'python' not in process.name().lower():
                 continue
-        except (psutil.AccessDenied, psutil.NoSuchProcess):
-            continue
+        except (psutil.AccessDenied, psutil.NoSuchProcess) as error:
+            if isinstance(error, psutil.AccessDenied):
+                logging.info('Access denied error, if you are having issues, try running as admin.')
         try:
             if 'plots' not in process.cmdline() or 'create' not in process.cmdline():
                 continue
         except (psutil.ZombieProcess, psutil.NoSuchProcess):
-            continue
+            pass
         if process.parent():
             try:
                 parent_commands = process.parent().cmdline()
                 if 'plots' in parent_commands and 'create' in parent_commands:
                     continue
-            except (psutil.AccessDenied, psutil.ZombieProcess):
+            except (psutil.AccessDenied, psutil.ZombieProcess) as error:
+                if isinstance(error, psutil.AccessDenied):
+                    logging.info('Access denied error, if you are having issues, try running as admin.')
                 pass
         logging.info(f'Found chia plotting process: {process.pid}')
         datetime_start = datetime.fromtimestamp(process.create_time())
@@ -213,8 +217,11 @@ def get_running_plots(jobs, running_work, instrumentation_settings):
                 log_file_path = file.path
                 logging.info(f'Found log file: {log_file_path}')
                 break
-        except (psutil.AccessDenied, RuntimeError):
+        except (psutil.AccessDenied, RuntimeError) as error:
             logging.info(f'Failed to find log file: {process.pid}')
+            if isinstance(error, psutil.AccessDenied):
+                logging.info('Check permissions of log files/folder; if problem persists, try running as admin.')
+                
         except psutil.NoSuchProcess:
             continue
 
