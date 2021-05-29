@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 
 from plotmanager.library.commands import plots
 from plotmanager.library.utilities.exceptions import InvalidConfigurationSetting
-from plotmanager.library.utilities.processes import identify_drive, is_windows, start_process
+from plotmanager.library.utilities.processes import identify_drive, is_admin, is_windows, start_process
 from plotmanager.library.utilities.objects import Job, Work
 from plotmanager.library.utilities.log import get_log_file_name
 
@@ -322,14 +322,18 @@ def start_work(job, chia_location, log_directory, drives_free_space):
     process = start_process(args=plot_command, log_file=log_file)
     pid = process.pid
     logging.info(f'Started process: {pid}')
-
     logging.info(f'Setting priority level: {nice_val}')
-    psutil.Process(pid).nice(nice_val)
-    logging.info(f'Set priority level')
-    if job.enable_cpu_affinity:
-        logging.info(f'Setting process cpu affinity: {job.cpu_affinity}')
-        psutil.Process(pid).cpu_affinity(job.cpu_affinity)
-        logging.info(f'Set process cpu affinity')
+    if is_admin():
+        psutil.Process(pid).nice(nice_val)
+        logging.info(f'Set priority level')
+        if job.enable_cpu_affinity:
+            logging.info(f'Setting process cpu affinity: {job.cpu_affinity}')
+            psutil.Process(pid).cpu_affinity(job.cpu_affinity)
+            logging.info(f'Set process cpu affinity')
+    else:
+        logging.warn(f'Could not set priority level, try running as admin or increase user privilages.')
+        if job.enable_cpu_affinity:
+            logging.warn(f'Could not process cpu affinity, try running as admin or increase user privilages.')
 
     work.pid = pid
     job.total_running += 1

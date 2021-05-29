@@ -1,5 +1,6 @@
 import pathlib
 import os
+from tabnanny import verbose
 import yaml
 
 
@@ -103,6 +104,16 @@ def _get_notifications_settings(config):
 
     return notifications
 
+# def _get_verbose_notifications(config):
+#     notifications = config.get('notifications', None)
+    
+#     if not notifications:
+#         notifications = {}
+
+#     if 'notify_discord' in notifications and notifications['notify_discord']:
+#         _check_parameters(parameter=notifications, expected_parameters=['verbose'],
+#                           parameter_type='notification')
+#     return verbose
 
 def _get_view_settings(config):
     if 'view' not in config:
@@ -145,6 +156,7 @@ def get_config_info():
     max_concurrent, max_for_phase_1, minimum_minutes_between_jobs = _get_global_config(config=config)
     progress_settings = _get_progress_settings(config=config)
     notification_settings = _get_notifications_settings(config=config)
+    verbose_notifications = _get_verbose_notifications(config=config)
     view_settings = _get_view_settings(config=config)
     instrumentation_settings = _get_instrumentation_settings(config=config)
 
