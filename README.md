@@ -10,13 +10,16 @@ all credits for this Software go to him :)
 
  no Changes to Core functionalities
 
- necessary modifications to jobs.py (the Data evaluation part) for passing more Variables etc. 
+ necessary modifications to log.py (the Data evaluation part) for passing more Variables etc. 
 
  quite a lot of modifications to print.py (the terminal output part)
 
 
 #### -colored drive table
 to display lines green while < 75% of drive is used, yellow while 75% - 89% and red while > 90% (headers get a bit messed up but still easy to read, see screenshot)
+
+#### -drivetable shows free space instead of used
+credits go to https://github.com/fiveangle/Swar-Chia-Plot-Manager/tree/critical_temp_disk_info
 
 #### -colored background of status Text 
  green if Manager is running and red if it's not for better visibility (yes this line is very important...)
